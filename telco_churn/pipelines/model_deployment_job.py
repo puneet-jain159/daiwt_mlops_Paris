@@ -13,9 +13,10 @@ class ModelDeploymentJob(Workload):
                                     model_name=self.env_vars['model_name'])
 
     def _get_reference_data(self) -> str:
+        reference_table_catalog_name = self.env_vars['reference_table_catalog_name']
         reference_table_database_name = self.env_vars['reference_table_database_name']
         reference_table_name = self.env_vars['reference_table_name']
-        return f'{reference_table_database_name}.{reference_table_name}'
+        return f'{reference_table_catalog_name}.{reference_table_database_name}.{self.env_vars["reference_table_name"]}'
 
     def _get_reference_data_label_col(self) -> str:
         return self.env_vars['reference_table_label_col']

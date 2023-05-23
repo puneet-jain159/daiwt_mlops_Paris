@@ -63,8 +63,9 @@ mlflow_tracking_cfg = MLflowTrackingConfig(experiment_path=env_vars['model_deplo
                                            model_name=env_vars['model_name'])
 
 # Define reference dataset 
+reference_table_catalog_name = env_vars['reference_table_catalog_name']
 reference_table_database_name = env_vars['reference_table_database_name']
-reference_table_name = f'{reference_table_database_name}.{env_vars["reference_table_name"]}'   
+reference_table_name = f'{reference_table_catalog_name}.{reference_table_database_name}.{env_vars["reference_table_name"]}'   
 
 # Set label col from reference dataset
 label_col = env_vars['reference_table_label_col']
