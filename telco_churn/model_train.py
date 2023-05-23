@@ -86,10 +86,11 @@ class ModelTrain:
         -------
         List[databricks.feature_store.entities.feature_lookup.FeatureLookup]
         """
+
         feature_store_table_cfg = self.cfg.feature_store_table_cfg
 
         _logger.info('Creating feature lookups...')
-        feature_table_name = f'{feature_store_table_cfg.database_name}.{feature_store_table_cfg.table_name}'
+        feature_table_name = f'{feature_store_table_cfg.catalog_name}.{feature_store_table_cfg.database_name}.{feature_store_table_cfg.table_name}'
         feature_lookup = FeatureLookup(table_name=feature_table_name,
                                        lookup_key=feature_store_table_cfg.primary_keys)
         # Lookup for single feature table
@@ -106,8 +107,11 @@ class ModelTrain:
         databricks.feature_store.training_set.TrainingSet
         """
         feature_store_table_cfg = self.cfg.feature_store_table_cfg
+        _logger.info(f'Setting Catalog...  {feature_store_table_cfg.catalog_name}')
+        _logger.info(f'USE CATALOG {feature_store_table_cfg.catalog_name};')
+
         labels_table_cfg = self.cfg.labels_table_cfg
-        labels_df = spark.table(f'{labels_table_cfg.database_name}.{labels_table_cfg.table_name}')
+        labels_df = spark.read.table(f'{feature_store_table_cfg.catalog_name}.{labels_table_cfg.database_name}.{labels_table_cfg.table_name}')
 
         feature_table_lookup = self._get_feature_table_lookup()
         _logger.info('Creating Feature Store training set...')
@@ -229,8 +233,11 @@ class ModelTrain:
             # Log metrics for the test set
             _logger.info('==========Model Evaluation==========')
             _logger.info('Evaluating and logging metrics')
-            test_metrics = mlflow.sklearn.eval_and_log_metrics(model, X_test, y_test, prefix='test_')
-            print(pd.DataFrame(test_metrics, index=[0]))
+            X_test['target_values'] = y_test.to_numpy()
+            test_metrics = mlflow.evaluate(f'runs:/{mlflow_run.info.run_id}/model',data= X_test, 
+                                           targets ='target_values',
+                                           model_type='classifier')
+            print(test_metrics)
 
             # Register model to MLflow Model Registry if provided
             if mlflow_tracking_cfg.model_name is not None:

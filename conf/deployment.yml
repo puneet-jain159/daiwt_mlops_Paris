@@ -2,9 +2,10 @@ custom:
 
   # Cluster configs for each environment
   default-cluster-spec: &default-cluster-spec
-    spark_version: '11.2.x-cpu-ml-scala2.12'
+    spark_version: '12.2.x-cpu-ml-scala2.12'
     node_type_id: 'Standard_DS3_v2' # NOTE: this is an Azure-specific instance type. Change accordingly if running on Azure or GCP.
     driver_node_type_id: 'Standard_DS3_v2'  # NOTE: this is an Azure-specific instance type. Change accordingly if running on Azure or GCP.
+    data_security_mode: 'SINGLE_USER'
     num_workers: 1
     # To reduce start up time for each job, it is advisable to use a cluster pool. To do so involves supplying the following
     # two fields with a pool_id to acquire both the driver and instances from.
@@ -32,21 +33,21 @@ environments:
   dev:
     strict_path_adjustment_policy: true
     workflows:
-      - name: 'daiwt-DEV-telco-churn-demo-setup-Paris'
+      - name: 'DEV-telco-churn-demo-setup-pj'
         <<: *dev-cluster-config
         notebook_task:
           notebook_path: '/Repos/anastasia.prokaieva@databricks.com/daiwt_mlops_Paris/notebooks/demo_setup'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/demo_setup.yml']
-      - name: 'daiwt-DEV-telco-churn-feature-table-creation-Paris'
+      - name: 'DEV-telco-churn-feature-table-creation-pj'
         <<: *dev-cluster-config
         notebook_task:
           notebook_path: '/Repos/anastasia.prokaieva@databricks.com/daiwt_mlops_Paris/notebooks/feature_table_creator'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/feature_table_creator.yml']
-      - name: 'daiwt-DEV-telco-churn-model-train-Paris'
+      - name: 'DEV-telco-churn-model-train-pj'
         <<:
           - *dev-cluster-config
         notebook_task:
@@ -54,7 +55,7 @@ environments:
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
-      - name: 'daiwt-DEV-telco-churn-model-deployment-Paris'
+      - name: 'DEV-telco-churn-model-deployment-pj'
         <<:
           - *dev-cluster-config
         notebook_task:
@@ -62,7 +63,7 @@ environments:
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_deployment.yml']
-      - name: 'daiwt-DEV-telco-churn-model-inference-batch-Paris'
+      - name: 'DEV-telco-churn-model-inference-batch-pj'
         <<:
           - *dev-cluster-config
         notebook_task:
@@ -70,7 +71,7 @@ environments:
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_inference_batch.yml']
-      - name: 'daiwt-DEV-telco-churn-sample-integration-test-Paris'
+      - name: 'DEV-telco-churn-sample-integration-test-pj'
         <<:
           - *dev-cluster-config
         spark_python_task:
@@ -81,7 +82,7 @@ environments:
 
   staging:
     workflows:
-      - name: 'daiwt-STAGING-telco-churn-sample-integration-test-Paris'
+      - name: 'STAGING-telco-churn-sample-integration-test-pj'
         <<:
           - *staging-cluster-config
         spark_python_task:
@@ -92,10 +93,10 @@ environments:
   prod:
     strict_path_adjustment_policy: true
     workflows:
-      - name: 'daiwt-PROD-telco-churn-demo-setup-Paris'
+      - name: 'PROD-telco-churn-demo-setup-pj'
         <<: *prod-cluster-config
         git_source:
-          git_url: https://github.com/AnastasiaProkaieva/daiwt_mlops_Paris.git
+          git_url: https://github.com/puneet-jain159/daiwt_mlops_Paris.git
           git_provider: "github"
           git_branch: "main"
         notebook_task:
@@ -104,18 +105,20 @@ environments:
                        '--env', 'file:fuse://conf/prod/.prod.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/demo_setup.yml']
 
-      - name: 'daiwt-PROD-telco-churn-initial-model-train-register-Paris'
+      - name: 'PROD-telco-churn-initial-model-train-register-pj'
+        job_clusters:
+          - job_cluster_key: "prod_mlops_cluster_pj"
+            <<: *prod-cluster-config
         tasks:
           - task_key: 'demo-setup'
-            <<:
-              - *prod-cluster-config
+            job_cluster_key: "prod_mlops_cluster_pj"
             spark_python_task:
               python_file: 'file://telco_churn/pipelines/demo_setup_job.py'
               parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                            '--env', 'file:fuse://conf/prod/.prod.env',
                            '--conf-file', 'file:fuse://conf/pipeline_configs/demo_setup.yml']
           - task_key: 'feature-table-creation'
-            <<: *prod-cluster-config
+            job_cluster_key: "prod_mlops_cluster_pj"
             depends_on:
               - task_key: 'demo-setup'
             spark_python_task:
@@ -124,7 +127,7 @@ environments:
                            '--env', 'file:fuse://conf/prod/.prod.env',
                            '--conf-file', 'file:fuse://conf/pipeline_configs/feature_table_creator.yml']
           - task_key: 'model-train'
-            <<: *prod-cluster-config
+            job_cluster_key: "prod_mlops_cluster_pj"
             depends_on:
               - task_key: 'demo-setup'
               - task_key: 'feature-table-creation'
@@ -134,9 +137,9 @@ environments:
                            '--env', 'file:fuse://conf/prod/.prod.env',
                            '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
 
-      - name: 'daiwt-PROD-telco-churn-train-deploy-inference-workflow-Paris'
+      - name: 'PROD-telco-churn-train-deploy-inference-workflow-pj'
         git_source:
-          git_url: https://github.com/AnastasiaProkaieva/daiwt_mlops_Paris.git
+          git_url: https://github.com/puneet-jain159/daiwt_mlops_Paris.git
           git_provider: "github"
           git_branch: "main"
         tasks:
@@ -163,45 +166,54 @@ environments:
               - task_key: 'model-train'
               - task_key: 'model-deploy'
 
-      - name: 'daiwt-PROD-telco-churn-model-train-Paris'
+      - name: 'PROD-telco-churn-model-train-pj'
         <<:
           - *prod-cluster-config
         git_source:
-          git_url: https://github.com/AnastasiaProkaieva/daiwt_mlops_Paris.git
+          git_url: https://github.com/puneet-jain159/daiwt_mlops_Paris.git
           git_provider: "github"
           git_branch: "main"
 
-          notebook_task:
-            notebook_path: 'notebooks/model_train'
-            base_parameters: {"env" : "prod"}
-            parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
-                         '--env', 'file:fuse://conf/prod/.prod.env',
-                         '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
+        tasks:
+          - task_key: 'model-train'
+            notebook_task:
+              notebook_path: 'notebooks/model_train'
+              base_parameters: {"env" : "prod"}
+              parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                          '--env', 'file:fuse://conf/prod/.prod.env',
+                          '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
+              source: GIT
 
-      - name: 'daiwt-PROD-telco-churn-model-deployment-Paris'
+      - name: 'PROD-telco-churn-model-deployment-pj'
         <<:
           - *prod-cluster-config
         git_source:
-          git_url: https://github.com/AnastasiaProkaieva/daiwt_mlops_Paris.git
+          git_url: https://github.com/puneet-jain159/daiwt_mlops_Paris.git
           git_provider: "github"
           git_branch: "main"
 
-          notebook_task:
-            notebook_path: 'notebooks/model_deployment'
-            parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
-                         '--env', 'file:fuse://conf/prod/.prod.env',
-                         '--conf-file', 'file:fuse://conf/pipeline_configs/model_deployment.yml']
+        tasks:
+          - task_key: 'model_deployment'
+            notebook_task:
+              notebook_path: 'notebooks/model_deployment'
+              parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                          '--env', 'file:fuse://conf/prod/.prod.env',
+                          '--conf-file', 'file:fuse://conf/pipeline_configs/model_deployment.yml']
+              source: GIT
 
-      - name: 'daiwt-PROD-telco-churn-model-inference-batch-Paris'
+      - name: 'PROD-telco-churn-model-inference-batch-pj'
         <<:
           - *prod-cluster-config
         git_source:
-          git_url: https://github.com/AnastasiaProkaieva/daiwt_mlops_Paris.git
+          git_url: https://github.com/puneet-jain159/daiwt_mlops_Paris.git
           git_provider: "github"
           git_branch: "main"
 
-          notebook_task:
-            notebook_path: 'notebooks/model_inference_batch'
-            parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
-                         '--env', 'file:fuse://conf/prod/.prod.env',
-                         '--conf-file', 'file:fuse://conf/pipeline_configs/model_inference_batch.yml']
+        tasks:
+          - task_key: 'model_inference_batch'
+            notebook_task:
+              notebook_path: 'notebooks/model_inference_batch'
+              parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                          '--env', 'file:fuse://conf/prod/.prod.env',
+                          '--conf-file', 'file:fuse://conf/pipeline_configs/model_inference_batch.yml']
+              source: GIT

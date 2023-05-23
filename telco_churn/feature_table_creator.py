@@ -39,7 +39,7 @@ class FeatureTableCreator:
         self.cfg = cfg
 
     @staticmethod
-    def setup(database_name: str, table_name: str) -> None:
+    def setup(catalog_name : str , database_name: str, table_name: str) -> None:
         """
         Set up database to use. Create the database {database_name} if it doesn't exist, and drop the table {table_name}
         if it exists
@@ -51,6 +51,9 @@ class FeatureTableCreator:
         table_name : str
             Drop table if it already exists
         """
+        _logger.info(f'USE CATALOG {catalog_name};')
+        spark.sql(f'CREATE CATALOG IF NOT EXISTS {catalog_name};')
+        spark.sql(f'USE CATALOG {catalog_name};')
         _logger.info(f'Creating database {database_name} if not exists')
         spark.sql(f'CREATE DATABASE IF NOT EXISTS {database_name};')
         spark.sql(f'USE {database_name};')
@@ -65,7 +68,19 @@ class FeatureTableCreator:
         pyspark.sql.DataFrame
             Input Spark DataFrame
         """
-        return spark.table(self.cfg.input_table)
+
+        df = spark.table(self.cfg.input_table)
+        feature_store_table_cfg = self.cfg.feature_store_table_cfg
+        
+        _logger.info(f'Creating clone of the table in UC for Lineage {feature_store_table_cfg.catalog_name};')
+
+        self.setup(catalog_name=feature_store_table_cfg.catalog_name,
+            database_name=self.cfg.input_table.split(".")[0],
+            table_name=self.cfg.input_table.split(".")[1])
+        
+        df.write.format('delta').mode('overwrite').saveAsTable(f"{feature_store_table_cfg.catalog_name}.{self.cfg.input_table}")
+
+        return spark.read.table(f"{feature_store_table_cfg.catalog_name}.{self.cfg.input_table}")
 
     def run_data_prep(self, input_df: pyspark.sql.DataFrame) -> pyspark.sql.DataFrame:
         """
@@ -106,7 +121,8 @@ class FeatureTableCreator:
         feature_store_table_cfg = self.cfg.feature_store_table_cfg
 
         # Create database if not exists, drop table if it already exists
-        self.setup(database_name=feature_store_table_cfg.database_name,
+        self.setup(catalog_name=feature_store_table_cfg.catalog_name,
+                   database_name=feature_store_table_cfg.database_name,
                    table_name=feature_store_table_cfg.table_name)
 
         # Store only features for each customerID, storing customerID, churn in separate churn_labels table
@@ -143,17 +159,20 @@ class FeatureTableCreator:
         else:
             raise RuntimeError('Feature Store table primary keys must be one of either str of list type')
 
+        labels_catalog_name = labels_table_cfg.catalog_name
         labels_database_name = labels_table_cfg.database_name
         labels_table_name = labels_table_cfg.table_name
         labels_dbfs_path = labels_table_cfg.dbfs_path
         # Create database if not exists, drop table if it already exists
-        self.setup(database_name=labels_database_name, table_name=labels_table_name)
+        self.setup(catalog_name= labels_catalog_name,
+                   database_name=labels_database_name,
+                   table_name=labels_table_name)
         # DataFrame of customerID/churn labels
         labels_df = df.select(labels_table_cols)
         _logger.info(f'Writing labels to DBFS: {labels_dbfs_path}')
-        labels_df.write.format('delta').mode('overwrite').save(labels_dbfs_path)
-        spark.sql(f"""CREATE TABLE {labels_database_name}.{labels_table_name}
-                      USING DELTA LOCATION '{labels_dbfs_path}';""")
+        labels_df.write.format('delta').mode('overwrite').saveAsTable(f"{labels_database_name}.{labels_table_name}")
+        # spark.sql(f"""CREATE TABLE {labels_database_name}.{labels_table_name}
+        #               USING DELTA LOCATION '{labels_dbfs_path}';""")
         _logger.info(f'Created labels table: {labels_database_name}.{labels_table_name}')
 
     def run(self) -> None:

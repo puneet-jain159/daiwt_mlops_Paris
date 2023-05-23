@@ -13,3 +13,6 @@ drop_feature_table: True
 # Drop labels table if it exists
 # Label table name set in deployment.yml
 drop_labels_table: True
+
+# Move Base table to the current Catalog
+move_data_to_uc: True

@@ -15,13 +15,15 @@ class FeatureTableCreatorJob(Workload):
         return FeaturizerConfig(**self.conf['data_prep_params'])
 
     def _get_feature_store_table_cfg(self) -> FeatureStoreTableConfig:
-        return FeatureStoreTableConfig(database_name=self.env_vars['feature_store_database_name'],
+        return FeatureStoreTableConfig(catalog_name=self.env_vars['feature_store_catalog_name'],
+                                       database_name=self.env_vars['feature_store_database_name'],
                                        table_name=self.env_vars['feature_store_table_name'],
                                        primary_keys=self.env_vars['feature_store_table_primary_keys'],
                                        description=self.env_vars['feature_store_table_description'])
 
     def _get_labels_table_cfg(self) -> LabelsTableConfig:
-        return LabelsTableConfig(database_name=self.env_vars['labels_table_database_name'],
+        return LabelsTableConfig(catalog_name=self.env_vars['labels_table_catalog_name'],
+                                 database_name=self.env_vars['labels_table_database_name'],
                                  table_name=self.env_vars['labels_table_name'],
                                  label_col=self.env_vars['labels_table_label_col'],
                                  dbfs_path=self.env_vars['labels_table_dbfs_path'])

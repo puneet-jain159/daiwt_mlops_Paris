@@ -23,12 +23,14 @@ class ModelTrainJob(Workload):
                                     model_name=self.env_vars['model_name'])
 
     def _get_feature_store_table_cfg(self):
-        return FeatureStoreTableConfig(database_name=self.env_vars['feature_store_database_name'],
+        return FeatureStoreTableConfig(catalog_name= self.env_vars['feature_store_catalog_name'],
+                                       database_name=self.env_vars['feature_store_database_name'],
                                        table_name=self.env_vars['feature_store_table_name'],
                                        primary_keys=self.env_vars['feature_store_table_primary_keys'])
 
     def _get_labels_table_cfg(self):
-        return LabelsTableConfig(database_name=self.env_vars['labels_table_database_name'],
+        return LabelsTableConfig(catalog_name= self.env_vars['labels_table_catalog_name'],
+                                database_name=self.env_vars['labels_table_database_name'],
                                  table_name=self.env_vars['labels_table_name'],
                                  label_col=self.env_vars['labels_table_label_col'])
 

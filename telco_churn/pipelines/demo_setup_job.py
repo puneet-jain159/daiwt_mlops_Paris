@@ -246,11 +246,20 @@ class DemoSetup(Workload):
 
         if self.conf['drop_feature_table']:
             _logger.info('Checking Feature Store...')
+            feature_store_catalog_name = self.env_vars['feature_store_catalog_name']
+            _logger.info('Set Catalog...')
+            spark.sql(f'CREATE CATALOG IF NOT EXISTS {feature_store_catalog_name};')
+            spark.sql(f'USE CATALOG {feature_store_catalog_name};')
             feature_store_database_name = self.env_vars['feature_store_database_name']
             feature_store_table_name = self.env_vars['feature_store_table_name']
             feature_store_table = f'{feature_store_database_name}.{feature_store_table_name}'
             if self._check_feature_table_exists(feature_store_table=feature_store_table):
                 self._drop_feature_table(feature_store_table=feature_store_table)
+
+        # if self.conf['move_data_to_uc']:
+        #     _logger.info('Creating a clone of the base data.....')
+        #     feature_store_catalog_name = self.env_vars['feature_store_catalog_name']
+
 
         if self.conf['drop_labels_table']:
             _logger.info('Checking existing labels table...')

@@ -45,6 +45,8 @@ class FeatureStoreTableConfig:
     Configuration data class used to unpack parameters when creating or loading a Feature Store table.
 
     Attributes:
+        catalog_name (str)
+            Name of catalog to use for creating the feature table
         database_name (str)
             Name of database to use for creating the feature table
         table_name (str)
@@ -59,6 +61,7 @@ class FeatureStoreTableConfig:
     database_name: str
     table_name: str
     primary_keys: Union[str, List[str]]
+    catalog_name: str = 'hive_metastore'
     description: str = None
 
 
@@ -82,6 +85,7 @@ class LabelsTableConfig:
     database_name: str
     table_name: str
     label_col: str
+    catalog_name: str = 'hive_metastore'
     primary_keys: Union[str, List[str]] = None
     dbfs_path: str = None
 
