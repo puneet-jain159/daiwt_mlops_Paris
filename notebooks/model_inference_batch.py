@@ -55,12 +55,17 @@ if dbutils.widgets.get(name='env') == 'dev':
     print(f'input_table_name: {input_table_name}')
 else:
     # Set input table name
-    input_table_name = pipeline_config['data_input']['table_name']
+
+    input_table_name = f"{env_vars['feature_store_catalog_name']}.\
+                         {env_vars['labels_table_database_name']}.\
+                         {env_vars['labels_table_name']}"
     print(f'input_table_name: {input_table_name}')
 
 # Set output table name
-predictions_table_database_name = env_vars['predictions_table_database_name']
-predictions_table_name = f'{predictions_table_database_name}.{env_vars["predictions_table_name"]}'
+predictions_table_database_name = env_vars['predictions_table_catalog_name']
+predictions_table_database_name =env_vars['predictions_table_database_name']
+predictions_table_name = f'{predictions_table_database_name}.{predictions_table_database_name}.{env_vars["predictions_table_name"]}'
+
 print(f'predictions_table_name: {predictions_table_name}')
 
 # COMMAND ----------

@@ -20,14 +20,15 @@ class ModelInferenceJob(Workload):
         """
         Get the name of the input table to perform inference on
         """
-        return self.conf['data_input']['table_name']
+        return f"{self.env_vars['feature_store_catalog_name']}.{self.env_vars['labels_table_database_name']}.{self.env_vars['labels_table_name']}"
 
     def _get_predictions_output_params(self) -> Dict:
         """
         Get a dictionary of delta_path, table_name, mode key-values to pass to run_and_write_batch of ModelInference
         """
+        predictions_table_database_name = self.env_vars['predictions_table_catalog_name']
         predictions_table_database_name = self.env_vars['predictions_table_database_name']
-        predictions_table_name = f'{predictions_table_database_name}.{self.env_vars["predictions_table_name"]}'
+        predictions_table_name = f'{predictions_table_database_name}.{predictions_table_database_name}.{self.env_vars["predictions_table_name"]}'
 
         return predictions_table_name
 
