@@ -64,7 +64,7 @@ else:
 # Set output table name
 predictions_table_catalog_name = env_vars['predictions_table_catalog_name']
 predictions_table_database_name =env_vars['predictions_table_database_name']
-predictions_table_name = f'{predictions_table_database_name}.{predictions_table_database_name}.{env_vars["predictions_table_name"]}'
+predictions_table_name = f'{predictions_table_catalog_name}.{predictions_table_database_name}.{env_vars["predictions_table_name"]}'
 
 print(f'predictions_table_name: {predictions_table_name}')
 
