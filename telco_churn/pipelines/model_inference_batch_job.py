@@ -26,9 +26,9 @@ class ModelInferenceJob(Workload):
         """
         Get a dictionary of delta_path, table_name, mode key-values to pass to run_and_write_batch of ModelInference
         """
-        predictions_table_database_name = self.env_vars['predictions_table_catalog_name']
+        predictions_table_catalog_name = self.env_vars['predictions_table_catalog_name']
         predictions_table_database_name = self.env_vars['predictions_table_database_name']
-        predictions_table_name = f'{predictions_table_database_name}.{predictions_table_database_name}.{self.env_vars["predictions_table_name"]}'
+        predictions_table_name = f'{predictions_table_catalog_name}.{predictions_table_database_name}.{self.env_vars["predictions_table_name"]}'
 
         return predictions_table_name
 

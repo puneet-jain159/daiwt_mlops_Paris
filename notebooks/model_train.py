@@ -50,14 +50,16 @@ mlflow_tracking_cfg = MLflowTrackingConfig(run_name=pipeline_config['mlflow_para
 
 
 # Set FeatureStoreTableConfig
-feature_store_table_cfg = FeatureStoreTableConfig(database_name=env_vars['feature_store_database_name'],
+feature_store_table_cfg = FeatureStoreTableConfig(catalog_name= env_vars['feature_store_catalog_name'],
+                                                  database_name=env_vars['feature_store_database_name'],
                                                   table_name=env_vars['feature_store_table_name'],
                                                   primary_keys=env_vars['feature_store_table_primary_keys'])
 
 # Set LabelsTableConfig
-labels_table_cfg = LabelsTableConfig(database_name=env_vars['labels_table_database_name'],
-                                 table_name=env_vars['labels_table_name'],
-                                 label_col=env_vars['labels_table_label_col'])
+labels_table_cfg = LabelsTableConfig(catalog_name= env_vars['labels_table_catalog_name'],
+                                    database_name=env_vars['labels_table_database_name'],
+                                    table_name=env_vars['labels_table_name'],
+                                    label_col=env_vars['labels_table_label_col'])
 
 # Set pipeline_params
 pipeline_params = pipeline_config['pipeline_params']

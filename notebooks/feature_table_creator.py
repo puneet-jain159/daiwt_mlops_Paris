@@ -47,13 +47,15 @@ env_vars = load_and_set_env_vars(env=dbutils.widgets.get('env'))
 featurizer_cfg = FeaturizerConfig(**pipeline_config['data_prep_params'])
 
 # Set Feature Store feature table config
-feature_store_table_cfg = FeatureStoreTableConfig(database_name=env_vars['feature_store_database_name'],
-                                                  table_name=env_vars['feature_store_table_name'],
-                                                  primary_keys=env_vars['feature_store_table_primary_keys'],
-                                                  description=env_vars['feature_store_table_description'])
+feature_store_table_cfg = FeatureStoreTableConfig(catalog_name= env_vars['feature_store_catalog_name'],
+                                       database_name = env_vars['feature_store_database_name'],
+                                       table_name= env_vars['feature_store_table_name'],
+                                       primary_keys = env_vars['feature_store_table_primary_keys'],
+                                       description= env_vars['feature_store_table_description'])
 
 # Set Labels Table config
-labels_table_cfg = LabelsTableConfig(database_name=env_vars['labels_table_database_name'],
+labels_table_cfg = LabelsTableConfig(catalog_name= env_vars['labels_table_catalog_name'],
+                                     database_name=env_vars['labels_table_database_name'],
                                      table_name=env_vars['labels_table_name'],
                                      label_col=env_vars['labels_table_label_col'],
                                      dbfs_path=env_vars['labels_table_dbfs_path'])

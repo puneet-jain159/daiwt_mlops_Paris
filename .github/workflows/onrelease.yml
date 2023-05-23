@@ -36,11 +36,11 @@ jobs:
 
       - name: Deploy multi-task workflow daiwt-PROD-telco-churn-train-deploy-inference-workflow-Paris [prod environment]
         run: |
-          dbx deploy -e prod --deployment-file conf/deployment.yml daiwt-PROD-telco-churn-train-deploy-inference-workflow-Paris
+          dbx deploy -e prod --deployment-file conf/deployment.yml PROD-telco-churn-train-deploy-inference-workflow-pj
 
       - name: Launch model training, deployment and inference workflow [prod environment]
         run: |
-          dbx launch -e prod daiwt-PROD-telco-churn-train-deploy-inference-workflow-Paris
+          dbx launch -e prod PROD-telco-churn-train-deploy-inference-workflow-pj
 
       # - name: Deploy PROD-telco-churn-model-train job [prod environment]
       #   run: |
