@@ -177,6 +177,7 @@ environments:
         tasks:
           - task_key: 'model-train'
             notebook_task:
+              base_parameters: {"env" : "prod"}
               notebook_path: 'notebooks/model_train'
               base_parameters: {"env" : "prod"}
               parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
@@ -195,6 +196,7 @@ environments:
         tasks:
           - task_key: 'model_deployment'
             notebook_task:
+              base_parameters: {"env" : "prod"}
               notebook_path: 'notebooks/model_deployment'
               parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                           '--env', 'file:fuse://conf/prod/.prod.env',
@@ -202,8 +204,9 @@ environments:
               source: GIT
 
       - name: 'PROD-telco-churn-model-inference-batch-pj'
-        <<:
-          - *prod-cluster-config
+        job_clusters:
+          - job_cluster_key: "prod_mlops_cluster_pj"
+            <<: *prod-cluster-config
         git_source:
           git_url: https://github.com/puneet-jain159/daiwt_mlops_Paris.git
           git_provider: "github"
@@ -211,8 +214,10 @@ environments:
 
         tasks:
           - task_key: 'model_inference_batch'
+            job_cluster_key: "prod_mlops_cluster_pj"
             notebook_task:
               notebook_path: 'notebooks/model_inference_batch'
+              base_parameters: {"env" : "prod"}
               parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                           '--env', 'file:fuse://conf/prod/.prod.env',
                           '--conf-file', 'file:fuse://conf/pipeline_configs/model_inference_batch.yml']
