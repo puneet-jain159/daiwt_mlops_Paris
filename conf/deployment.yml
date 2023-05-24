@@ -85,6 +85,7 @@ environments:
       - name: 'STAGING-telco-churn-sample-integration-test-pj'
         <<:
           - *staging-cluster-config
+        max_concurrent_runs: 5
         spark_python_task:
           python_file: 'file://tests/integration/sample_test.py'
           parameters: ['--env', 'file:fuse://conf/staging/.staging.env',
