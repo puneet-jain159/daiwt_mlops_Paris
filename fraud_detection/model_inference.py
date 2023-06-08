@@ -1,8 +1,8 @@
 import pyspark.sql.dataframe
 from databricks.feature_store import FeatureStoreClient
 
-from telco_churn.utils.get_spark import spark
-from telco_churn.utils.logger_utils import get_logger
+from fraud_detection.utils.get_spark import spark
+from fraud_detection.utils.logger_utils import get_logger
 
 _logger = get_logger()
 

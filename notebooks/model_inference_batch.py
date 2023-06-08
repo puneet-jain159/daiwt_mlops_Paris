@@ -21,9 +21,9 @@ dbutils.widgets.dropdown('env', 'dev', ['dev', 'staging', 'prod'], 'Environment 
 # DBTITLE 1,Module Imports
 from typing import Dict
 
-from telco_churn.utils.notebook_utils import load_and_set_env_vars, load_config
-from telco_churn.model_inference import ModelInference
-from telco_churn.utils.logger_utils import get_logger
+from fraud_detection.utils.notebook_utils import load_and_set_env_vars, load_config
+from fraud_detection.model_inference import ModelInference
+from fraud_detection.utils.logger_utils import get_logger
 
 _logger = get_logger()
 

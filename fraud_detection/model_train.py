@@ -12,10 +12,10 @@ from mlflow.tracking import MlflowClient
 import databricks
 from databricks.feature_store import FeatureStoreClient, FeatureLookup
 
-from telco_churn.common import MLflowTrackingConfig, FeatureStoreTableConfig, LabelsTableConfig
-from telco_churn.model_train_pipeline import ModelTrainPipeline
-from telco_churn.utils.get_spark import spark
-from telco_churn.utils.logger_utils import get_logger
+from fraud_detection.common import MLflowTrackingConfig, FeatureStoreTableConfig, LabelsTableConfig
+from fraud_detection.model_train_pipeline import ModelTrainPipeline
+from fraud_detection.utils.get_spark import spark
+from fraud_detection.utils.logger_utils import get_logger
 
 fs = FeatureStoreClient()
 _logger = get_logger()

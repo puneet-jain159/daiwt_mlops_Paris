@@ -1,5 +1,5 @@
 from setuptools import find_packages, setup
-from telco_churn import __version__
+from fraud_detection import __version__
 
 setup(
     name='telco_churn',

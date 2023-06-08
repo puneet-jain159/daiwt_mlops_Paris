@@ -1,6 +1,6 @@
-from telco_churn.common import Workload, MLflowTrackingConfig, FeatureStoreTableConfig, LabelsTableConfig
-from telco_churn.model_train import ModelTrain, ModelTrainConfig
-from telco_churn.utils.logger_utils import get_logger
+from fraud_detection.common import Workload, MLflowTrackingConfig, FeatureStoreTableConfig, LabelsTableConfig
+from fraud_detection.model_train import ModelTrain, ModelTrainConfig
+from fraud_detection.utils.logger_utils import get_logger
 
 _logger = get_logger()
 

@@ -4,8 +4,8 @@ import mlflow
 from mlflow.tracking import MlflowClient
 from mlflow.exceptions import RestException
 
-from telco_churn.common import Workload
-from telco_churn.utils.logger_utils import get_logger
+from fraud_detection.common import Workload
+from fraud_detection.utils.logger_utils import get_logger
 
 from databricks.feature_store.client import FeatureStoreClient
 

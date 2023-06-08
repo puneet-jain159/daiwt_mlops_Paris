@@ -1,4 +1,4 @@
-from telco_churn.common import Workload
+from fraud_detection.common import Workload
 
 
 class SampleJob(Workload):

@@ -3,8 +3,8 @@ custom:
   # Cluster configs for each environment
   default-cluster-spec: &default-cluster-spec
     spark_version: '12.2.x-cpu-ml-scala2.12'
-    node_type_id: 'Standard_DS3_v2' # NOTE: this is an Azure-specific instance type. Change accordingly if running on Azure or GCP.
-    driver_node_type_id: 'Standard_DS3_v2'  # NOTE: this is an Azure-specific instance type. Change accordingly if running on Azure or GCP.
+    node_type_id: 'i3.xlarge' # NOTE: this is an Azure-specific instance type. Change accordingly if running on Azure or GCP.
+    driver_node_type_id: 'i3.xlarge'  # NOTE: this is an Azure-specific instance type. Change accordingly if running on Azure or GCP.
     data_security_mode: 'SINGLE_USER'
     num_workers: 1
     # To reduce start up time for each job, it is advisable to use a cluster pool. To do so involves supplying the following
@@ -33,21 +33,21 @@ environments:
   dev:
     strict_path_adjustment_policy: true
     workflows:
-      - name: 'DEV-telco-churn-demo-setup-pj'
+      - name: 'DEV-fraud-detection-demo-setup-pj'
         <<: *dev-cluster-config
         notebook_task:
           notebook_path: '/Repos/anastasia.prokaieva@databricks.com/daiwt_mlops_Paris/notebooks/demo_setup'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/demo_setup.yml']
-      - name: 'DEV-telco-churn-feature-table-creation-pj'
+      - name: 'DEV-fraud-detection-feature-table-creation-pj'
         <<: *dev-cluster-config
         notebook_task:
           notebook_path: '/Repos/anastasia.prokaieva@databricks.com/daiwt_mlops_Paris/notebooks/feature_table_creator'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/feature_table_creator.yml']
-      - name: 'DEV-telco-churn-model-train-pj'
+      - name: 'DEV-fraud-detection-model-train-pj'
         <<:
           - *dev-cluster-config
         notebook_task:
@@ -55,7 +55,7 @@ environments:
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
-      - name: 'DEV-telco-churn-model-deployment-pj'
+      - name: 'DEV-fraud-detection-model-deployment-pj'
         <<:
           - *dev-cluster-config
         notebook_task:
@@ -63,7 +63,7 @@ environments:
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_deployment.yml']
-      - name: 'DEV-telco-churn-model-inference-batch-pj'
+      - name: 'DEV-fraud-detection-model-inference-batch-pj'
         <<:
           - *dev-cluster-config
         notebook_task:
@@ -71,7 +71,7 @@ environments:
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_inference_batch.yml']
-      - name: 'DEV-telco-churn-sample-integration-test-pj'
+      - name: 'DEV-fraud-detection-sample-integration-test-pj'
         <<:
           - *dev-cluster-config
         spark_python_task:
@@ -82,7 +82,7 @@ environments:
 
   staging:
     workflows:
-      - name: 'STAGING-telco-churn-sample-integration-test-pj'
+      - name: 'STAGING-fraud-detection-sample-integration-test-pj'
         <<:
           - *staging-cluster-config
         max_concurrent_runs: 5
@@ -94,7 +94,7 @@ environments:
   prod:
     strict_path_adjustment_policy: true
     workflows:
-      - name: 'PROD-telco-churn-demo-setup-pj'
+      - name: 'PROD-fraud-detection-demo-setup-pj'
         <<: *prod-cluster-config
         git_source:
           git_url: https://github.com/puneet-jain159/daiwt_mlops_Paris.git
@@ -106,7 +106,7 @@ environments:
                        '--env', 'file:fuse://conf/prod/.prod.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/demo_setup.yml']
 
-      - name: 'PROD-telco-churn-initial-model-train-register-pj'
+      - name: 'PROD-fraud-detection-initial-model-train-register-pj'
         job_clusters:
           - job_cluster_key: "prod_mlops_cluster_pj"
             <<: *prod-cluster-config
@@ -114,7 +114,7 @@ environments:
           - task_key: 'demo-setup'
             job_cluster_key: "prod_mlops_cluster_pj"
             spark_python_task:
-              python_file: 'file://telco_churn/pipelines/demo_setup_job.py'
+              python_file: 'file://fraud_detection/pipelines/demo_setup_job.py'
               parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                            '--env', 'file:fuse://conf/prod/.prod.env',
                            '--conf-file', 'file:fuse://conf/pipeline_configs/demo_setup.yml']
@@ -123,7 +123,7 @@ environments:
             depends_on:
               - task_key: 'demo-setup'
             spark_python_task:
-              python_file: 'file://telco_churn/pipelines/feature_table_creator_job.py'
+              python_file: 'file://fraud_detection/pipelines/feature_table_creator_job.py'
               parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                            '--env', 'file:fuse://conf/prod/.prod.env',
                            '--conf-file', 'file:fuse://conf/pipeline_configs/feature_table_creator.yml']
@@ -133,12 +133,12 @@ environments:
               - task_key: 'demo-setup'
               - task_key: 'feature-table-creation'
             spark_python_task:
-              python_file: 'file://telco_churn/pipelines/model_train_job.py'
+              python_file: 'file://fraud_detection/pipelines/model_train_job.py'
               parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                            '--env', 'file:fuse://conf/prod/.prod.env',
                            '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
 
-      - name: 'PROD-telco-churn-train-deploy-inference-workflow-pj'
+      - name: 'PROD-fraud-detection-train-deploy-inference-workflow-pj'
         job_clusters:
           - job_cluster_key: "prod_mlops_cluster_pj"
             <<: *prod-cluster-config
@@ -170,7 +170,7 @@ environments:
               - task_key: 'model-train'
               - task_key: 'model-deploy'
 
-      - name: 'PROD-telco-churn-model-train-pj'
+      - name: 'PROD-fraud-detection-model-train-pj'
         job_clusters:
           - job_cluster_key: "prod_mlops_cluster_pj"
             <<: *prod-cluster-config
@@ -191,7 +191,7 @@ environments:
                           '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
               source: GIT
 
-      - name: 'PROD-telco-churn-model-deployment-pj'
+      - name: 'PROD-fraud-detection-model-deployment-pj'
         job_clusters:
           - job_cluster_key: "prod_mlops_cluster_pj"
             <<: *prod-cluster-config
@@ -211,7 +211,7 @@ environments:
                           '--conf-file', 'file:fuse://conf/pipeline_configs/model_deployment.yml']
               source: GIT
 
-      - name: 'PROD-telco-churn-model-inference-batch-pj'
+      - name: 'PROD-fraud-detection-model-inference-batch-pj'
         job_clusters:
           - job_cluster_key: "prod_mlops_cluster_pj"
             <<: *prod-cluster-config

@@ -1,6 +1,6 @@
-from telco_churn.common import Workload, MLflowTrackingConfig
-from telco_churn.model_deployment import ModelDeployment, ModelDeploymentConfig
-from telco_churn.utils.logger_utils import get_logger
+from fraud_detection.common import Workload, MLflowTrackingConfig
+from fraud_detection.model_deployment import ModelDeployment, ModelDeploymentConfig
+from fraud_detection.utils.logger_utils import get_logger
 
 _logger = get_logger()
 

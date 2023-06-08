@@ -5,7 +5,7 @@ data_input:
   # Require DataFrame to score the model on - must contain column(s) for lookup keys
   # to join feature data from Feature Store
   catalog_name: ''
-  table_name: 'daiwt_mlops_prod_paris.churn_labels_paris'
+  table_name: 'fraud_mlops_prod.fraud_label_table'
 
 data_output:
   mode: 'overwrite'

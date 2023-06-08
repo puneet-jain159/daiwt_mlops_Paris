@@ -1,8 +1,8 @@
 from typing import Dict
 
-from telco_churn.common import Workload
-from telco_churn.model_inference import ModelInference
-from telco_churn.utils.logger_utils import get_logger
+from fraud_detection.common import Workload
+from fraud_detection.model_inference import ModelInference
+from fraud_detection.utils.logger_utils import get_logger
 
 _logger = get_logger()
 

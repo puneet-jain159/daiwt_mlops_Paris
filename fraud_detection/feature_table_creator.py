@@ -2,12 +2,12 @@ from dataclasses import dataclass
 
 import pyspark.sql.dataframe
 
-from telco_churn import featurize
-from telco_churn.common import FeatureStoreTableConfig, LabelsTableConfig
-from telco_churn.featurize import FeaturizerConfig
-from telco_churn.utils import feature_store_utils
-from telco_churn.utils.get_spark import spark
-from telco_churn.utils.logger_utils import get_logger
+from fraud_detection import featurize
+from fraud_detection.common import FeatureStoreTableConfig, LabelsTableConfig
+from fraud_detection.featurize import FeaturizerConfig
+from fraud_detection.utils import feature_store_utils
+from fraud_detection.utils.get_spark import spark
+from fraud_detection.utils.logger_utils import get_logger
 
 _logger = get_logger()
 
@@ -69,16 +69,9 @@ class FeatureTableCreator:
             Input Spark DataFrame
         """
 
-        df = spark.table(self.cfg.input_table)
         feature_store_table_cfg = self.cfg.feature_store_table_cfg
         
-        _logger.info(f'Creating clone of the table in UC for Lineage {feature_store_table_cfg.catalog_name};')
-
-        self.setup(catalog_name=feature_store_table_cfg.catalog_name,
-            database_name=self.cfg.input_table.split(".")[0],
-            table_name=self.cfg.input_table.split(".")[1])
-        
-        df.write.format('delta').mode('overwrite').saveAsTable(f"{feature_store_table_cfg.catalog_name}.{self.cfg.input_table}")
+        _logger.info(f'Reading the raw files from Catalog: {feature_store_table_cfg.catalog_name};')
 
         return spark.read.table(f"{feature_store_table_cfg.catalog_name}.{self.cfg.input_table}")
 

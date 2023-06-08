@@ -18,12 +18,12 @@ dbutils.widgets.dropdown('env', 'dev', ['dev', 'staging', 'prod'], 'Environment 
 # COMMAND ----------
 
 # DBTITLE 1,Module Imports
-from telco_churn.utils.notebook_utils import load_and_set_env_vars, load_config
+from fraud_detection.utils.notebook_utils import load_and_set_env_vars, load_config
 
-from telco_churn.common import FeatureStoreTableConfig, LabelsTableConfig
-from telco_churn.feature_table_creator import FeatureTableCreator, FeatureTableCreatorConfig
-from telco_churn.featurize import FeaturizerConfig
-from telco_churn.utils.logger_utils import get_logger
+from fraud_detection.common import FeatureStoreTableConfig, LabelsTableConfig
+from fraud_detection.feature_table_creator import FeatureTableCreator, FeatureTableCreatorConfig
+from fraud_detection.featurize import FeaturizerConfig
+from fraud_detection.utils.logger_utils import get_logger
 
 _logger = get_logger()
 

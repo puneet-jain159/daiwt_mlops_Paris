@@ -19,11 +19,11 @@ dbutils.widgets.dropdown('env', 'dev', ['dev', 'staging', 'prod'], 'Environment 
 # COMMAND ----------
 
 # DBTITLE 1,Module Imports
-from telco_churn.utils.notebook_utils import load_and_set_env_vars, load_config
+from fraud_detection.utils.notebook_utils import load_and_set_env_vars, load_config
 
-from telco_churn.common import MLflowTrackingConfig, FeatureStoreTableConfig, LabelsTableConfig
-from telco_churn.model_train import ModelTrain, ModelTrainConfig
-from telco_churn.utils.logger_utils import get_logger
+from fraud_detection.common import MLflowTrackingConfig, FeatureStoreTableConfig, LabelsTableConfig
+from fraud_detection.model_train import ModelTrain, ModelTrainConfig
+from fraud_detection.utils.logger_utils import get_logger
 
 _logger = get_logger()
 

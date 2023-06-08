@@ -5,10 +5,10 @@ import pandas as pd
 import pyspark.sql
 from mlflow.tracking import MlflowClient
 
-from telco_churn.common import MLflowTrackingConfig
-from telco_churn.model_inference import ModelInference
-from telco_churn.utils.evaluation_utils import ModelEvaluation
-from telco_churn.utils.logger_utils import get_logger
+from fraud_detection.common import MLflowTrackingConfig
+from fraud_detection.model_inference import ModelInference
+from fraud_detection.utils.evaluation_utils import ModelEvaluation
+from fraud_detection.utils.logger_utils import get_logger
 
 _logger = get_logger()
 

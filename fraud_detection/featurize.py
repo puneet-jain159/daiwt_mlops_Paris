@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import pyspark
 import pyspark.pandas as ps
 
-from telco_churn.utils.logger_utils import get_logger
+from fraud_detection.utils.logger_utils import get_logger
 
 _logger = get_logger()
 
@@ -21,6 +21,8 @@ class FeaturizerConfig:
     ohe: bool = False
     cat_cols: list = None
     drop_missing: bool = True
+    drop_cols: list = None
+    drop_col: bool = True
 
 
 class Featurizer:
@@ -90,6 +92,23 @@ class Featurizer:
         psdf.columns = new_col_names
 
         return psdf
+    
+    @staticmethod
+    def drop_cols(psdf: pyspark.pandas.DataFrame,cat_cols: list) -> pyspark.pandas.DataFrame:
+        """
+        Take a pyspark.pandas DataFrame and drop the columns specified
+        
+        Parameters
+        ----------
+        psdf : pyspark.pandas.DataFrame
+            pyspark.pandas DataFrame to OHE
+        cat_cols : list
+            List of categorical features
+        Returns
+        -------
+        pyspark.pandas.DataFrame
+        """
+        return ps.drop(psdf, columns=cat_cols, axis=1)
 
     @staticmethod
     def drop_missing_values(psdf: pyspark.pandas.DataFrame) -> pyspark.pandas.DataFrame:
@@ -131,8 +150,8 @@ class Featurizer:
         psdf = df.pandas_api()
 
         # Convert label to int and rename column
-        _logger.info(f'Processing label: {self.cfg.label_col}')
-        psdf = self.process_label(psdf, rename_to='churn')
+        # _logger.info(f'Processing label: {self.cfg.label_col}')
+        # psdf = self.process_label(psdf, rename_to='fraud')
 
         # OHE
         if self.cfg.ohe:
@@ -145,10 +164,15 @@ class Featurizer:
             _logger.info(f'Renaming columns')
             psdf = self.process_col_names(psdf)
 
+        # Drop column values
+        if self.cfg.drop_col:
+            _logger.info(f'Dropping columns')
+            psdf = self.drop_missing_values(psdf)
+
         # Drop missing values
         if self.cfg.drop_missing:
             _logger.info(f'Dropping missing values')
-            psdf = self.drop_missing_values(psdf)
+            psdf = self.drop_cols(psdf, self.cfg.drop_cols)
 
         # Return as Spark DataFrame
         preproc_df = psdf.to_spark()
