@@ -108,7 +108,7 @@ class Featurizer:
         -------
         pyspark.pandas.DataFrame
         """
-        return ps.drop(psdf, columns=cat_cols, axis=1)
+        return psdf.drop(labels=cat_cols, axis=1)
 
     @staticmethod
     def drop_missing_values(psdf: pyspark.pandas.DataFrame) -> pyspark.pandas.DataFrame:
@@ -167,12 +167,13 @@ class Featurizer:
         # Drop column values
         if self.cfg.drop_col:
             _logger.info(f'Dropping columns')
-            psdf = self.drop_missing_values(psdf)
+            psdf = self.drop_cols(psdf, self.cfg.drop_cols)
 
         # Drop missing values
         if self.cfg.drop_missing:
             _logger.info(f'Dropping missing values')
             psdf = self.drop_cols(psdf, self.cfg.drop_cols)
+            psdf = self.drop_missing_values(psdf)
 
         # Return as Spark DataFrame
         preproc_df = psdf.to_spark()

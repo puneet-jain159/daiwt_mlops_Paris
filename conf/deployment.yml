@@ -36,14 +36,14 @@ environments:
       - name: 'DEV-fraud-detection-demo-setup-pj'
         <<: *dev-cluster-config
         notebook_task:
-          notebook_path: '/Repos/anastasia.prokaieva@databricks.com/daiwt_mlops_Paris/notebooks/demo_setup'
+          notebook_path: '/Repos/puneet.jain@databricks.com/daiwt_mlops_Paris/notebooks/demo_setup'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/demo_setup.yml']
       - name: 'DEV-fraud-detection-feature-table-creation-pj'
         <<: *dev-cluster-config
         notebook_task:
-          notebook_path: '/Repos/anastasia.prokaieva@databricks.com/daiwt_mlops_Paris/notebooks/feature_table_creator'
+          notebook_path: '/Repos/puneet.jain@databricks.com/daiwt_mlops_Paris/notebooks/feature_table_creator'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/feature_table_creator.yml']
@@ -51,7 +51,7 @@ environments:
         <<:
           - *dev-cluster-config
         notebook_task:
-          notebook_path: '/Repos/anastasia.prokaieva@databricks.com/daiwt_mlops_Paris/notebooks/model_train'
+          notebook_path: '/Repos/puneet.jain@databricks.com/daiwt_mlops_Paris/notebooks/model_train'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_train.yml']
@@ -59,7 +59,7 @@ environments:
         <<:
           - *dev-cluster-config
         notebook_task:
-          notebook_path: '/Repos/anastasia.prokaieva@databricks.com/daiwt_mlops_Paris/notebooks/model_deployment'
+          notebook_path: '/Repos/puneet.jain@databricks.com/daiwt_mlops_Paris/notebooks/model_deployment'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_deployment.yml']
@@ -67,7 +67,7 @@ environments:
         <<:
           - *dev-cluster-config
         notebook_task:
-          notebook_path: '/Repos/anastasia.prokaieva@databricks.com/daiwt_mlops_Paris/notebooks/model_inference_batch'
+          notebook_path: '/Repos/puneet.jain@databricks.com/daiwt_mlops_Paris/notebooks/model_inference_batch'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/dev/.dev.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/model_inference_batch.yml']
@@ -99,13 +99,13 @@ environments:
         git_source:
           git_url: https://github.com/puneet-jain159/daiwt_mlops_Paris.git
           git_provider: "github"
-          git_branch: "main"
+          git_branch: "fraud_detection_scope"
         notebook_task:
           notebook_path: 'notebooks/demo_setup'
           parameters: ['--base-data-params', 'file:fuse://conf/.base_data_params.env',
                        '--env', 'file:fuse://conf/prod/.prod.env',
                        '--conf-file', 'file:fuse://conf/pipeline_configs/demo_setup.yml']
-
+      # ****************************************** #
       - name: 'PROD-fraud-detection-initial-model-train-register-pj'
         job_clusters:
           - job_cluster_key: "prod_mlops_cluster_pj"
@@ -145,7 +145,7 @@ environments:
         git_source:
           git_url: https://github.com/puneet-jain159/daiwt_mlops_Paris.git
           git_provider: "github"
-          git_branch: "main"
+          git_branch: "fraud_detection_scope"
         tasks:
           - task_key: 'model-train'
             job_cluster_key: "prod_mlops_cluster_pj"
@@ -177,7 +177,7 @@ environments:
         git_source:
           git_url: https://github.com/puneet-jain159/daiwt_mlops_Paris.git
           git_provider: "github"
-          git_branch: "main"
+          git_branch: "fraud_detection_scope"
 
         tasks:
           - task_key: 'model-train'
@@ -198,7 +198,7 @@ environments:
         git_source:
           git_url: https://github.com/puneet-jain159/daiwt_mlops_Paris.git
           git_provider: "github"
-          git_branch: "main"
+          git_branch: "fraud_detection_scope"
 
         tasks:
           - task_key: 'model_deployment'
@@ -210,7 +210,7 @@ environments:
                           '--env', 'file:fuse://conf/prod/.prod.env',
                           '--conf-file', 'file:fuse://conf/pipeline_configs/model_deployment.yml']
               source: GIT
-
+      # ************************************************** #
       - name: 'PROD-fraud-detection-model-inference-batch-pj'
         job_clusters:
           - job_cluster_key: "prod_mlops_cluster_pj"
@@ -218,7 +218,7 @@ environments:
         git_source:
           git_url: https://github.com/puneet-jain159/daiwt_mlops_Paris.git
           git_provider: "github"
-          git_branch: "main"
+          git_branch: "fraud_detection_scope"
 
         tasks:
           - task_key: 'model_inference_batch'
