@@ -4,6 +4,9 @@ import pyspark
 
 import databricks
 from databricks.feature_store import FeatureStoreClient
+from fraud_detection.utils.logger_utils import get_logger
+
+_logger = get_logger()
 
 
 def create_and_write_feature_table(df: pyspark.sql.DataFrame,
@@ -31,13 +34,18 @@ def create_and_write_feature_table(df: pyspark.sql.DataFrame,
     """
     fs = FeatureStoreClient()
 
-    feature_table = fs.create_table(
-        name=feature_table_name,
-        primary_keys=primary_keys,
-        schema=df.schema,
-        description=description
-    )
-
-    fs.write_table(df=df, name=feature_table_name, mode='overwrite')
+    try: 
+        fs.get_table(name=feature_table_name)
+        fs.write_table(df=df, name=feature_table_name, mode='merge')
+        _logger.info('Feature Table found updating the Table')
+    except:
+        _logger.info('Feature Table not found creating the Table')
+        feature_table = fs.create_table(
+            name=feature_table_name,
+            primary_keys=primary_keys,
+            schema=df.schema,
+            description=description
+        )
+        fs.write_table(df=df, name=feature_table_name, mode='overwrite')
 
     return feature_table

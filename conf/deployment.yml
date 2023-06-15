@@ -170,6 +170,46 @@ environments:
               - task_key: 'model-train'
               - task_key: 'model-deploy'
 
+      - name: 'PROD-fraud-detection-refresh-deploy-inference-workflow-pj'
+        job_clusters:
+          - job_cluster_key: "prod_mlops_cluster_pj"
+            <<: *prod-cluster-config
+        git_source:
+          git_url: https://github.com/puneet-jain159/daiwt_mlops_Paris.git
+          git_provider: "github"
+          git_branch: "fraud_detection_scope"
+        tasks:
+          - task_key: 'feature-table-creation'
+            job_cluster_key: "prod_mlops_cluster_pj"
+            notebook_task:
+              notebook_path: 'notebooks/feature_table_creator'
+              base_parameters: {"env" : "prod"}
+
+          - task_key: 'model-train'
+            job_cluster_key: "prod_mlops_cluster_pj"
+            notebook_task:
+              notebook_path: 'notebooks/model_train'
+              base_parameters: {"env" : "prod"}
+            depends_on:
+              - task_key: 'feature-table-creation'
+
+          - task_key: 'model-deploy'
+            job_cluster_key: "prod_mlops_cluster_pj"
+            notebook_task:
+              notebook_path: 'notebooks/model_deployment'
+              base_parameters: {"env" : "prod"}
+            depends_on:
+              - task_key: 'model-train'
+
+          - task_key: 'model-inference-batch'
+            job_cluster_key: "prod_mlops_cluster_pj"
+            notebook_task:
+              notebook_path: 'notebooks/model_inference_batch'
+              base_parameters: {"env" : "prod"}
+            depends_on:
+              - task_key: 'model-train'
+              - task_key: 'model-deploy'
+
       - name: 'PROD-fraud-detection-model-train-pj'
         job_clusters:
           - job_cluster_key: "prod_mlops_cluster_pj"
