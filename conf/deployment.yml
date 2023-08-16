@@ -2,7 +2,7 @@ custom:
 
   # Cluster configs for each environment
   default-cluster-spec: &default-cluster-spec
-    spark_version: '12.2.x-cpu-ml-scala2.12'
+    spark_version: '13.2.x-cpu-ml-scala2.12'
     node_type_id: 'i3.xlarge' # NOTE: this is an Azure-specific instance type. Change accordingly if running on Azure or GCP.
     driver_node_type_id: 'i3.xlarge'  # NOTE: this is an Azure-specific instance type. Change accordingly if running on Azure or GCP.
     data_security_mode: 'SINGLE_USER'

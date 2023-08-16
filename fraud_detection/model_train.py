@@ -248,14 +248,19 @@ class ModelTrain:
                 client = MlflowClient()
                 model_version_details = client.get_model_version(name=mlflow_tracking_cfg.model_name,
                                                                  version=model_details.version)
+                client.set_registered_model_alias(
+                                                name = mlflow_tracking_cfg.model_name,
+                                                alias = "Staging",
+                                                version = model_details.version)
+
                 
                 _logger.info(f'Transitioning model: {mlflow_tracking_cfg.model_name} to Staging...')
 
-                client.transition_model_version_stage(
-                    name=mlflow_tracking_cfg.model_name,
-                    version=model_details.version,
-                    stage='Staging'
-                )
+                # client.transition_model_version_stage(
+                #     name=mlflow_tracking_cfg.model_name,
+                #     version=model_details.version,
+                #     stage='Staging'
+                # )
 
                 
 

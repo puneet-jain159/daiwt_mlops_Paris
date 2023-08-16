@@ -137,7 +137,9 @@ class ModelDeployment:
         """
         client = MlflowClient()
         model_name = self.cfg.mlflow_tracking_cfg.model_name
-        staging_model_version = client.get_latest_versions(name=model_name, stages=['staging'])[0]
+        model_version_infos = client.search_model_versions("name = '%s'" % model_name)
+        new_model_version = max([model_version_info.version for model_version_info in model_version_infos])
+        # staging_model_version = client.get_latest_versions(name=model_name, stages=['staging'])[0]
 
         _logger.info(f'metric={self.cfg.comparison_metric}')
         _logger.info(f'higher_is_better={self.cfg.higher_is_better}')
@@ -145,35 +147,33 @@ class ModelDeployment:
             if staging_eval_metric <= production_eval_metric:
                 _logger.info('Candidate Staging model DOES NOT perform better than current Production model')
                 _logger.info('Transition candidate model from stage="staging" to stage="archived"')
-                client.transition_model_version_stage(name=model_name,
-                                                      version=staging_model_version.version,
-                                                      stage='archived')
+                client.set_registered_model_alias(name=model_name,
+                                                      version=new_model_version,
+                                                      alias="archived")
 
             elif staging_eval_metric > production_eval_metric:
                 _logger.info('Candidate Staging model DOES perform better than current Production model')
                 _logger.info('Transition candidate model from stage="staging" to stage="production"')
                 _logger.info('Existing Production model will be archived')
-                client.transition_model_version_stage(name=model_name,
-                                                      version=staging_model_version.version,
-                                                      stage='production',
-                                                      archive_existing_versions=True)
+                client.set_registered_model_alias(name=model_name,
+                                                      version=new_model_version,
+                                                      alias="production")
 
         else:
             if staging_eval_metric >= production_eval_metric:
                 _logger.info('Candidate Staging model DOES NOT perform better than current Production model')
                 _logger.info('Transition candidate model from stage="staging" to stage="archived"')
-                client.transition_model_version_stage(name=model_name,
-                                                      version=staging_model_version.version,
-                                                      stage='archived')
+                client.set_registered_model_alias(name=model_name,
+                                                      version=new_model_version,
+                                                      alias="archived")
 
             elif staging_eval_metric < production_eval_metric:
                 _logger.info('Candidate Staging model DOES perform better than current Production model')
                 _logger.info('Transition candidate model from stage="staging" to stage="production"')
                 _logger.info('Existing Production model will be archived')
-                client.transition_model_version_stage(name=model_name,
-                                                      version=staging_model_version.version,
-                                                      stage='production',
-                                                      archive_existing_versions=True)
+                client.set_registered_model_alias(name=model_name,
+                                                      version=new_model_version,
+                                                      alias="production")
 
     def run(self):
         """

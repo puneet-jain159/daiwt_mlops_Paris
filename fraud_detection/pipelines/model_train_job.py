@@ -1,9 +1,10 @@
 from fraud_detection.common import Workload, MLflowTrackingConfig, FeatureStoreTableConfig, LabelsTableConfig
 from fraud_detection.model_train import ModelTrain, ModelTrainConfig
 from fraud_detection.utils.logger_utils import get_logger
+import mlflow
 
 _logger = get_logger()
-
+mlflow.set_registry_uri("databricks-uc")
 
 class ModelTrainJob(Workload):
 
