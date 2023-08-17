@@ -191,6 +191,7 @@ class ModelTrain:
         """
         _logger.info('==========Running model training==========')
         mlflow_tracking_cfg = self.cfg.mlflow_tracking_cfg
+        feature_store_cfg = self.cfg.feature_store_table_cfg
 
         _logger.info('==========Setting MLflow experiment==========')
         self._set_experiment(mlflow_tracking_cfg)
@@ -244,12 +245,12 @@ class ModelTrain:
                 _logger.info('==========MLflow Model Registry==========')
                 _logger.info(f'Registering model: {mlflow_tracking_cfg.model_name}')
                 model_details = mlflow.register_model(f'runs:/{mlflow_run.info.run_id}/fs_model',
-                                                        name=mlflow_tracking_cfg.model_name)
+                                                        name=f"{feature_store_cfg.catalog_name}.{feature_store_cfg.database_name}.{mlflow_tracking_cfg.model_name}")
                 client = MlflowClient()
-                model_version_details = client.get_model_version(name=mlflow_tracking_cfg.model_name,
-                                                                 version=model_details.version)
+                # model_version_details = client.get_model_version(name=mlflow_tracking_cfg.model_name,
+                #                                                  version=model_details.version)
                 client.set_registered_model_alias(
-                                                name = mlflow_tracking_cfg.model_name,
+                                                name = f"{feature_store_cfg.catalog_name}.{feature_store_cfg.database_name}.{mlflow_tracking_cfg.model_name}",
                                                 alias = "Staging",
                                                 version = model_details.version)
 

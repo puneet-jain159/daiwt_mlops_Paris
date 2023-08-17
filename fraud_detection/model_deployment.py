@@ -137,6 +137,7 @@ class ModelDeployment:
         """
         client = MlflowClient()
         model_name = self.cfg.mlflow_tracking_cfg.model_name
+        model_name = f"{self.cfg.feature_store_table_cfg.catalog_name}.{self.cfg.feature_store_table_cfg.database_name}.{model_name}"
         model_version_infos = client.search_model_versions("name = '%s'" % model_name)
         new_model_version = max([model_version_info.version for model_version_info in model_version_infos])
         # staging_model_version = client.get_latest_versions(name=model_name, stages=['staging'])[0]
