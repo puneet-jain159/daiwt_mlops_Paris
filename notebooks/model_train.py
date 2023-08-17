@@ -19,6 +19,7 @@ dbutils.widgets.dropdown('env', 'dev', ['dev', 'staging', 'prod'], 'Environment 
 # COMMAND ----------
 
 # DBTITLE 1,Module Imports
+import mlflow
 from fraud_detection.utils.notebook_utils import load_and_set_env_vars, load_config
 
 from fraud_detection.common import MLflowTrackingConfig, FeatureStoreTableConfig, LabelsTableConfig
@@ -32,6 +33,7 @@ _logger = get_logger()
 # DBTITLE 1,Load pipeline config params
 # Set pipeline name
 pipeline_name = 'model_train'
+mlflow.set_registry_uri("databricks-uc")
 
 # Load pipeline config yaml file (../conf/pipeline_configs/{pipeline_name}.yml)
 pipeline_config = load_config(pipeline_name)

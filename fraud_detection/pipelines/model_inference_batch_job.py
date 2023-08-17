@@ -12,7 +12,7 @@ class ModelInferenceJob(Workload):
     def _get_model_uri(self) -> str:
         model_name = self.env_vars['model_name']
         model_registry_stage = self.conf['mlflow_params']['model_registry_stage']
-        model_uri = f'models:/{model_name}/{model_registry_stage}'
+        model_uri = f'models:/{model_name}@{model_registry_stage}'
 
         return model_uri
 
