@@ -47,7 +47,7 @@ env_vars = load_and_set_env_vars(env=dbutils.widgets.get('env'))
 # Fetch model_uri
 model_name = env_vars['model_name']
 model_registry_stage = pipeline_config['mlflow_params']['model_registry_stage']
-model_uri = f'models:/{model_name}/{model_registry_stage}'
+model_uri = f"models:/{env_vars['feature_store_catalog_name']}.{env_vars['labels_table_database_name']}.{model_name}@{model_registry_stage}"
 print(f'model_uri: {model_uri}')
 
 if dbutils.widgets.get(name='env') == 'dev':
