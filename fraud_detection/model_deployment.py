@@ -67,7 +67,7 @@ class ModelDeployment:
             raise RuntimeError('MLflow experiment_id or experiment_path must be set in MLflowTrackingConfig')
 
     def _get_model_uri_by_stage(self, stage: str):
-        return f'models:/{self.cfg.mlflow_tracking_cfg.model_name}@{stage}'
+        return f'models:/{self.cfg.reference_data.split(".")[0]}.{self.cfg.reference_data.split(".")[1]}.{self.cfg.mlflow_tracking_cfg.model_name}@{stage}'
 
     def _batch_inference_by_stage(self, stage: str) -> pyspark.sql.DataFrame:
         """
